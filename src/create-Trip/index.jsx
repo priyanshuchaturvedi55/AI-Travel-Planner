@@ -2,14 +2,30 @@ import React, { useEffect, useRef, useState } from "react";
 import { LoadScript, StandaloneSearchBox } from "@react-google-maps/api";
 import { Input } from "postcss";
 import { Button } from "../components/ui/button";
-import { SelectBudgetOptions, SelectTravelsList } from "../constants/option";
-import { toast } from "sonner"
+import { FcGoogle } from "react-icons/fc";
+import {
+  AI_PROMPT,
+  SelectBudgetOptions,
+  SelectTravelsList,
+} from "../constants/option";
+import { toast } from "sonner";
+import { chatSession } from "../components/services/AIMODEL";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useGoogleLogin } from "@react-oauth/google";
 
 // Define libraries array outside the component
 const libraries = ["places"];
 
 function CreateTrip() {
   const [place, setPlace] = useState("");
+  const [open1, setOpen1] = useState(false);
   const searchBoxRef = useRef(null);
   const [formData, setFormData] = useState({});
 
@@ -17,20 +33,46 @@ function CreateTrip() {
     setFormData({
       ...formData,
       [name]: value,
-      
     });
   };
   useEffect(() => {
     console.log(formData);
   }, [formData]);
-  
-  const OnGenerateTrip = () => {
-    if(formData?.["no.of.days"] > 5 || ! formData?.location || !formData?.budget || !formData?.traveler){
+
+  // here we are using the useGoogleLogin hook to get the login function
+
+  const login = useGoogleLogin({
+    onSuccess:(codeResp)=> console.log(codeResp),
+    onError:(error)=> console.log(error)
+  })
+
+
+  const OnGenerateTrip = async () => {
+    const user = localStorage.getItem("user");
+    if (!user) {
+      setOpen1(true);
+      return;
+    }
+
+    if (
+      formData?.["no.of.days"] > 5 ||
+      !formData?.location ||
+      !formData?.budget ||
+      !formData?.traveler
+    ) {
       toast("please fill all the details");
       return;
     }
-    console.log(formData);
-  }
+    const FINAL_PROMPT = AI_PROMPT.replace("{location}", formData?.location)
+      .replace("{totalDays}", formData?.["no.of.days"])
+      .replace("{travel}", formData?.traveler)
+      .replace("{budget}", formData?.budget);
+
+    console.log(FINAL_PROMPT);
+    // now we send a message to the AI model with the final prompt  --AIModel
+    const result = await chatSession.sendMessage(FINAL_PROMPT);
+    console.log(result?.response?.text());
+  };
   return (
     <div className="sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10">
       <h2 className="font-bold text-3xl">
@@ -55,13 +97,12 @@ function CreateTrip() {
             <StandaloneSearchBox
               onLoad={(ref) => (searchBoxRef.current = ref)}
               onPlacesChanged={() => {
-                if(!searchBoxRef.current) return;
+                if (!searchBoxRef.current) return;
                 const places = searchBoxRef.current.getPlaces();
-                if(!places || places.length === 0) return;
-                  const selectedPlace = places[0].formatted_address;
-                  setPlace(selectedPlace);
-                  handlePlaceChanged("location", selectedPlace);
-                
+                if (!places || places.length === 0) return;
+                const selectedPlace = places[0].formatted_address;
+                setPlace(selectedPlace);
+                handlePlaceChanged("location", selectedPlace);
               }}
             >
               <input
@@ -88,7 +129,7 @@ function CreateTrip() {
             type="number"
             placeholder="Ex. 3"
             className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            onChange={(e) => handlePlaceChanged("no.of.days",e.target.value)}
+            onChange={(e) => handlePlaceChanged("no.of.days", e.target.value)}
           />
         </div>
       </div>
@@ -104,7 +145,7 @@ function CreateTrip() {
               key={index}
               onClick={() => handlePlaceChanged("budget", item.title)}
               className={`cursor-pointer p-4 border rounded-lg hover:shadow-lg
-                ${formData?.budget==item.title && 'shadow-lg border-black'}`}
+                ${formData?.budget == item.title && "shadow-lg border-black"}`}
             >
               <h2 className="text-4xl">{item.icon}</h2>
               <h2 className="font-bold text-lg">{item.title}</h2>
@@ -125,7 +166,9 @@ function CreateTrip() {
               key={index}
               onClick={() => handlePlaceChanged("traveler", item.people)}
               className={`cursor-pointer p-4 border rounded-lg hover:shadow-lg
-                ${formData?.traveler==item.people && 'shadow-lg border-black'}`}
+                ${
+                  formData?.traveler == item.people && "shadow-lg border-black"
+                }`}
             >
               <h2 className="text-4xl">{item.icon}</h2>
               <h2 className="font-bold text-lg">{item.title}</h2>
@@ -136,6 +179,24 @@ function CreateTrip() {
       </div>
       <div className="my-10 justify-end flex">
         <Button onClick={OnGenerateTrip}>Generate Trip</Button>
+
+        <Dialog open={open1}>
+        
+          <DialogContent>
+            <DialogHeader>
+              {/* <DialogTitle>Are you absolutely sure?</DialogTitle> */}
+              <DialogDescription>
+                <img src="/logo.svg" alt="" />
+                <h2 className="font-bold text-lg mt-7">Sign In With Google</h2>
+                <p>Sign in to the App with Google Authentication securely</p>
+              <Button 
+              onClick={login}
+              className="w-full mt-5 flex gap-4 items-center" > <FcGoogle className="h-7 w-7" />Sign in With Google</Button>
+
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
