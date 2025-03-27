@@ -19,6 +19,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
+import { doc, setDoc } from "firebase/firestore"; 
+import { db } from "../components/services/firebaseConfig";
 
 // Define libraries array outside the component
 const libraries = ["places"];
@@ -41,11 +44,11 @@ function CreateTrip() {
 
   // here we are using the useGoogleLogin hook to get the login function
 
-  const login = useGoogleLogin({
-    onSuccess:(codeResp)=> console.log(codeResp),
+  const login = useGoogleLogin ({
+    onSuccess:(codeResp)=> GetUserProfile(codeResp),
     onError:(error)=> console.log(error)
   })
-
+// here we are using the useGoogleLogin hook to get the login function
 
   const OnGenerateTrip = async () => {
     const user = localStorage.getItem("user");
@@ -73,6 +76,37 @@ function CreateTrip() {
     const result = await chatSession.sendMessage(FINAL_PROMPT);
     console.log(result?.response?.text());
   };
+
+  const SaveAiTrip = async (TripData) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const docId = Date.now().toString();
+// Add a new document in collection "cities"
+await setDoc(doc(db, "AITRIPPLANNER", "docId"), {
+  userSelection: formData,
+  tripData:TripData,
+});
+  }
+
+
+
+  // here we are using the useGoogleLogin hook to get the login function
+  const GetUserProfile = (tokenInfo) =>{
+    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${tokenInfo.access_token}`,{
+      headers:{
+        Authorization: `Bearer ${tokenInfo?.access_token}`,
+        Accept:'Application/json'
+        }
+    }).then((resp)=>{
+      console.log(resp);
+      // save the data in localstorage
+      localStorage.setItem("user",JSON.stringify(resp.data));
+      setOpen1(false);
+      OnGenerateTrip();
+    })
+  }
+  
+
+
   return (
     <div className="sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10">
       <h2 className="font-bold text-3xl">

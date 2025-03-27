@@ -21,7 +21,7 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   
-<GoogleOAuthProvider clientId="<import.meta.env.VITE_GOOGLE_AUTH_CLIENT_ID>">
+<GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_AUTH_CLIENT_ID}>
   <StrictMode>
     <Header/>
     <Toaster/>
