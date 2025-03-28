@@ -22,6 +22,8 @@ import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { doc, setDoc } from "firebase/firestore"; 
 import { db } from "../components/services/firebaseConfig";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
 // Define libraries array outside the component
 const libraries = ["places"];
@@ -29,8 +31,10 @@ const libraries = ["places"];
 function CreateTrip() {
   const [place, setPlace] = useState("");
   const [open1, setOpen1] = useState(false);
+  const [loading, setLoading] = useState(false);
   const searchBoxRef = useRef(null);
   const [formData, setFormData] = useState({});
+  const Navigate = useNavigate();
 
   const handlePlaceChanged = (name, value) => {
     setFormData({
@@ -66,25 +70,33 @@ function CreateTrip() {
       toast("please fill all the details");
       return;
     }
+   setLoading(true);
+
     const FINAL_PROMPT = AI_PROMPT.replace("{location}", formData?.location)
       .replace("{totalDays}", formData?.["no.of.days"])
       .replace("{travel}", formData?.traveler)
       .replace("{budget}", formData?.budget);
 
-    console.log(FINAL_PROMPT);
     // now we send a message to the AI model with the final prompt  --AIModel
     const result = await chatSession.sendMessage(FINAL_PROMPT);
     console.log(result?.response?.text());
+    setLoading(false);
+    SaveAiTrip(result?.response?.text());
   };
 
   const SaveAiTrip = async (TripData) => {
+    setLoading(true);
     const user = JSON.parse(localStorage.getItem("user"));
     const docId = Date.now().toString();
 // Add a new document in collection "cities"
-await setDoc(doc(db, "AITRIPPLANNER", "docId"), {
+await setDoc(doc(db, "AITRIPPLANNER", docId), {
   userSelection: formData,
-  tripData:TripData,
+  tripData:JSON.parse(TripData),
+  userEmail:user?.email,
+  id:docId
 });
+setLoading(false);
+Navigate(`/view-trip/${docId}`); 
   }
 
 
@@ -212,7 +224,14 @@ await setDoc(doc(db, "AITRIPPLANNER", "docId"), {
         </div>
       </div>
       <div className="my-10 justify-end flex">
-        <Button onClick={OnGenerateTrip}>Generate Trip</Button>
+        <Button
+        disabled={loading}
+        onClick={OnGenerateTrip}>
+          {
+            loading?
+            <AiOutlineLoading3Quarters className="h-7 w-7 animate-spin" />: "Generate Trip"
+          }
+          </Button>
 
         <Dialog open={open1}>
         
@@ -224,8 +243,14 @@ await setDoc(doc(db, "AITRIPPLANNER", "docId"), {
                 <h2 className="font-bold text-lg mt-7">Sign In With Google</h2>
                 <p>Sign in to the App with Google Authentication securely</p>
               <Button 
+              disable={loading}
               onClick={login}
-              className="w-full mt-5 flex gap-4 items-center" > <FcGoogle className="h-7 w-7" />Sign in With Google</Button>
+              className="w-full mt-5 flex gap-4 items-center" >
+                
+               <FcGoogle className="h-7 w-7" />
+               Sign in With Google
+            
+               </Button>
 
               </DialogDescription>
             </DialogHeader>
