@@ -4,6 +4,9 @@ import { db } from '../../components/services/firebaseConfig';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner'; 
 import InfoSection from '../components/infoSection';
+import Hotel from '../components/Hotel';
+import PlacesToVisit from '../components/PlacesToVisit';
+import Footer from '../components/Footer';
 
 const TripId = () => {
     const { tripid } = useParams();
@@ -35,8 +38,15 @@ const TripId = () => {
     };
 
     return (
+        
         <div className='p-10 md:px-20 lg:px-44 xl:px-56'>
+            {/* // Information section */}
             {trip ? <InfoSection trip={trip}/> : <p>Loading trip details...</p>}
+            {/* // Hotel section */}
+            <Hotel trip={trip}/>
+            <PlacesToVisit trip={trip}/>
+            <Footer trip={trip}/>
+
         </div>
     );
 };
