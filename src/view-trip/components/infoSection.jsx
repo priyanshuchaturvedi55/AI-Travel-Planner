@@ -22,7 +22,7 @@ const InfoSection = ({ trip }) => {
         const photoName = result.data.places[0].photos[photoIndex].name;
         const photoUrl = PHOTO_REF_URL.replace("{NAME}", photoName);
         
-        console.log(photoUrl); // Debugging
+        // console.log(photoUrl); // Debugging
         setPhotoUrl(photoUrl);
       } else {
         console.error("No photos available");

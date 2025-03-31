@@ -4,7 +4,7 @@ import HotelCardItem from "./HotelCardItem";
 
 
 const Hotel = ({ trip }) => {
-  console.log("Hotel Component Data:", trip);
+  // console.log("Hotel Component Data:", trip);
 
   // Extract trip details dynamically
   const tripDetails = trip?.tripData && Object.values(trip.tripData)[0]; 

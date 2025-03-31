@@ -26,7 +26,7 @@ const Header = () => {
   const user = JSON.parse(localStorage.getItem("user"));
  
   useEffect(() => {
-    console.log(user);
+    // console.log(user);
   }, []);
   const login = useGoogleLogin ({
     onSuccess:(codeResp)=> GetUserProfile(codeResp),
@@ -49,7 +49,7 @@ const Header = () => {
   }
   return (
     <div className="p-2 shadow-sm flex justify-between items-center px-5">
-      <img src="/logo.svg" alt="" />
+      <h1 className="font-extrabold text-3xl">Travel <span className="text-red-600">EAse</span>🌍</h1>
       <div>
         {user ? (
           <div className="flex items-center gap-3">

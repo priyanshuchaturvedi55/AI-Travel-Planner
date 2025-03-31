@@ -40,3 +40,30 @@
 .read-the-docs {
   color: #888;
 }
+
+
+
+
+
+/* In your App.css or main CSS file */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Full viewport height */
+}
+
+.main-content {
+  flex: 1; /* Ensures main content takes up available space */
+}
+
+footer {
+  background-color: white;
+  padding: 10px;
+  text-align: center;
+  /* You can customize the footer styling as needed */
+}

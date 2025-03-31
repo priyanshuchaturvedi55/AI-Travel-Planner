@@ -43,7 +43,7 @@ function CreateTrip() {
     });
   };
   useEffect(() => {
-    console.log(formData);
+    // console.log(formData);
   }, [formData]);
 
   // here we are using the useGoogleLogin hook to get the login function
@@ -79,7 +79,7 @@ function CreateTrip() {
 
     // now we send a message to the AI model with the final prompt  --AIModel
     const result = await chatSession.sendMessage(FINAL_PROMPT);
-    console.log(result?.response?.text());
+    // console.log(result?.response?.text());
     setLoading(false);
     SaveAiTrip(result?.response?.text());
   };

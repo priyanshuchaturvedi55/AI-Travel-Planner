@@ -22,14 +22,14 @@ const TripId = () => {
     const GetTripData = async () => {
         try {
             const docRef = doc(db, "AITRIPPLANNER", tripid); 
-            console.log("Fetching document:", tripid); // ✅ Debugging log
+            // console.log("Fetching document:", tripid); // ✅ Debugging log
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
-                console.log("Document data:", docSnap.data());
+                // console.log("Document data:", docSnap.data());
                 setTrip(docSnap.data());
             } else {
-                console.log("No Such Document!");
+                // console.log("No Such Document!");
                 toast("No trip found with this ID");
             }
         } catch (error) {
