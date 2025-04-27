@@ -20,7 +20,7 @@ Explore the live version of the **AI Trip Planner** by clicking the link below:
 
 
 
-© 2025 [Priyanahu chaturvedi]. All rights reserved.
+© 2025 Priyanshu chaturvedi. All rights reserved.
 Unauthorized copying, distribution, modification, or use of this project, in whole or in part, is strictly prohibited without prior written permission.
 
 
