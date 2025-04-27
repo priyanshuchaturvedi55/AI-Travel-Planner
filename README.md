@@ -18,10 +18,9 @@ Explore the live version of the **AI Trip Planner** by clicking the link below:
 - **TailwindCSS**: A utility-first CSS framework for building custom and responsive designs.
 - **Vercel**: A platform for hosting and deploying fast, scalable web applications.
 
-## Installation
 
-To run the **AI Trip Planner** project locally, follow the steps below:
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-username/ai-trip-planner.git
+© 2025 [Priyanahu chaturvedi]. All rights reserved.
+Unauthorized copying, distribution, modification, or use of this project, in whole or in part, is strictly prohibited without prior written permission.
+
+
